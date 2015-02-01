@@ -1,36 +1,52 @@
 package dsl001.tictactoe.model;
 
 /**
- * Model - Cell
+ * Model of cell.
  * 
  * @author dsl001
- *
+ * @since January 2015
  */
 public class Cell {
-	public enum Status {
-		UNMARKED, X_MARKED, O_MARKED
-	};
+    // Different possible status of the cell
+    public enum Status {
+        UNMARKED, X_MARKED, O_MARKED
+    };
 
-	private Status status;
+    private Status status;
 
-	public Cell() {
-		setStatus(Status.UNMARKED);
-	}
+    /**
+     * Initialize cell with unmarked status.
+     */
+    public Cell() {
+        reset();
+    }
 
-	public Status getStatus() {
-		return status;
-	}
+    /**
+     * @return Status of cell.
+     */
+    public Status getStatus() {
+        return status;
+    }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+    /**
+     * Sets status to unmarked.
+     */
+    public void reset() {
+        this.status = Status.UNMARKED;
+    }
 
-	public void mark(boolean firstPlayer) {
-		if (firstPlayer) {
-			setStatus(Status.X_MARKED);
-		}
-		else {
-			setStatus(Status.O_MARKED);
-		}
-	}
+    /**
+     * Marks with X or O status based on if the player is first or second.
+     * 
+     * @param firstPlayer True, then set status to X mark; false, then set
+     *        status to O mark
+     */
+    public void mark(boolean firstPlayer) {
+        if (firstPlayer) {
+            this.status = Status.X_MARKED;
+        }
+        else {
+            this.status = Status.O_MARKED;
+        }
+    }
 }

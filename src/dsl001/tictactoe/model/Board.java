@@ -7,162 +7,237 @@ import dsl001.tictactoe.controller.NotifyListener;
 import dsl001.tictactoe.model.Cell.Status;
 
 /**
- * Model - Board
+ * Model of the board.
  * 
  * @author dsl001
- *
+ * @since January 2015
  */
 public class Board {
-	public static final int ROWS = 3;
-	public static final int COLUMNS = 3;
+    public static final int ROWS = 3; // Number of rows on the board
+    public static final int COLUMNS = 3; // Number of columns on the board
 
-	public static final int NUM_MOVES_TO_CHECK_WIN = 5;
+    // Number of total moves it takes to start checking if a player won
+    public static final int NUM_MOVES_TO_CHECK_WIN = 5;
 
-	private boolean firstPlayer;
+    // Toggles between first and second player
+    private boolean firstPlayer;
 
-	private Cell[][] board;
+    // Board comprised of double array of cells
+    private Cell[][] board;
 
-	private int numMoves;
+    // Track number of moves
+    private int numMoves;
 
-	private boolean playerWon;
+    // Whether three in a row has been identified
+    private boolean playerWon;
 
-	private List<NotifyListener> notifyListeners;
+    // List of notify listeners
+    private List<NotifyListener> notifyListeners;
 
-	public Board() {
-		notifyListeners = new ArrayList<NotifyListener>();
+    /**
+     * Initializes the listeners and board.
+     */
+    public Board() {
+        notifyListeners = new ArrayList<NotifyListener>();
 
-		board = new Cell[ROWS][COLUMNS];
+        board = new Cell[ROWS][COLUMNS];
 
-		// initialize board
-		for (int r = 0; r < ROWS; r++) {
-			for (int c = 0; c < COLUMNS; c++) {
-				board[r][c] = new Cell();
-			}
-		}
-	}
+        // initialize board
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLUMNS; c++) {
+                board[r][c] = new Cell();
+            }
+        }
+    }
 
-	public Cell[][] getStatus() {
-		return board;
-	}
+    /**
+     * @return Status of all cells on the board.
+     */
+    public Cell[][] getStatus() {
+        return board;
+    }
 
-	public void reset() {
-		firstPlayer = true;
-		numMoves = 0;
-		playerWon = false;
+    /**
+     * Resets the board to start a new game.
+     */
+    public void reset() {
+        // Set first player to mark first
+        firstPlayer = true;
+        // Reset number of moves made
+        numMoves = 0;
+        // Set playerWon to false
+        playerWon = false;
 
-		for (int r = 0; r < ROWS; r++) {
-			for (int c = 0; c < COLUMNS; c++) {
-				board[r][c].setStatus(Status.UNMARKED);
-			}
-		}
+        // Mark all the cells to unmarked status
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLUMNS; c++) {
+                board[r][c].reset();
+            }
+        }
 
-		renderBoard(board);
-		notifyPlayer();
-	}
+        // Notify that the board needs to be rendered
+        renderBoard(board);
+        // Notify to place mark
+        notifyPlayer();
+    }
 
-	private void notifyPlayer() {
-		for (NotifyListener listener : notifyListeners) {
-			listener.notifyTurn(firstPlayer);
-		}
+    /**
+     * Checks if player won by checking for three of the same status.
+     * 
+     * @param r Row position to start checking for win
+     * @param c Column position to start checking for win
+     */
+    public void setPlayerWon(int r, int c) {
+        // Check for three in in a row
+        boolean row = board[r][0].getStatus() == board[r][1].getStatus()
+                && board[r][1].getStatus() == board[r][2].getStatus();
 
-	}
+        // Check for three in a column
+        boolean column = board[0][c].getStatus() == board[1][c].getStatus()
+                && board[1][c].getStatus() == board[2][c].getStatus();
 
-	private void renderBoard(Cell[][] board) {
-		for (NotifyListener listener : notifyListeners) {
-			listener.renderBoard(board);
-		}
-	}
+        // Check for three in a backwards diagonal
+        boolean bdiagonal = (r == c)
+                && board[0][0].getStatus() == board[1][1].getStatus()
+                && board[1][1].getStatus() == board[2][2].getStatus();
 
-	public void setPlayerWon(int r, int c) {
-		boolean row = board[r][0].getStatus() == board[r][1].getStatus()
-				&& board[r][1].getStatus() == board[r][2].getStatus();
+        // Check for three in a forwards diagonal
+        boolean fdiagonal = (r + c == 2)
+                && board[2][0].getStatus() == board[1][1].getStatus()
+                && board[1][1].getStatus() == board[0][2].getStatus();
 
-		boolean column = board[0][c].getStatus() == board[1][c].getStatus()
-				&& board[1][c].getStatus() == board[2][c].getStatus();
+        playerWon = row || column || bdiagonal || fdiagonal;
+    }
 
-		boolean bdiagonal = (r == c)
-				&& board[0][0].getStatus() == board[1][1].getStatus()
-				&& board[1][1].getStatus() == board[2][2].getStatus();
+    /**
+     * Update status on cell on the board.
+     * 
+     * @param r Row position to update
+     * @param c Column position to update
+     */
+    public void placeMark(int r, int c) {
+        // Only update if row and column position are valid
+        if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS) {
+            // Only update if cell is unmarked
+            if (board[r][c].getStatus() == Status.UNMARKED) {
+                board[r][c].mark(firstPlayer);
 
-		boolean fdiagonal = (r + c == 2)
-				&& board[2][0].getStatus() == board[1][1].getStatus()
-				&& board[1][1].getStatus() == board[0][2].getStatus();
+                // With mark mark, render board
+                renderBoard(board);
 
-		playerWon = row || column || bdiagonal || fdiagonal;
-	}
+                // Check for win if number of moves are made to check for win
+                if ((numMoves + 1) >= NUM_MOVES_TO_CHECK_WIN) {
+                    setPlayerWon(r, c);
 
-	public void placeMark(int r, int c) {
-		if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS) {
-			if (board[r][c].getStatus() == Status.UNMARKED) {
-				board[r][c].mark(firstPlayer);
+                    // Notify if a won occurred
+                    if (playerWon) {
+                        notifyWin();
+                    }
+                    // If no win occurred and all moves have been made on the
+                    // board, notify a stalemate occurred
+                    else if ((numMoves + 1 == (ROWS * COLUMNS))) {
+                        notifyStalemate();
+                    }
+                    // If not win or stalemate occurred, notify next player to
+                    // mark
+                    else {
+                        firstPlayer = !firstPlayer;
+                        numMoves++;
 
-				renderBoard(board);
+                        notifyPlayer();
+                    }
+                }
+                // Notify next player to mark
+                else {
+                    firstPlayer = !firstPlayer;
+                    numMoves++;
 
-				if ((numMoves + 1) >= NUM_MOVES_TO_CHECK_WIN) {
-					setPlayerWon(r, c);
+                    notifyPlayer();
+                }
+            }
+            // Notify player that the cell was already marked
+            else {
+                notifyCellAlreadyMarked();
+                // renderBoard(board);
+                notifyPlayer();
+            }
+        }
+        // Notify player that the mark position is invalid
+        else {
+            notifyInvalidInput(r, c);
+            // renderBoard(board);
+            notifyPlayer();
+        }
+    }
 
-					if (playerWon) {
-						notifyWin();
-					}
-					else if ((numMoves + 1 == (ROWS * COLUMNS))) {
-						notifyStalemate();
-					}
-					else {
-						firstPlayer = !firstPlayer;
-						numMoves++;
+    /**
+     * Goes through list of notify listeners to callback with board status per
+     * cell.
+     */
+    private void renderBoard(Cell[][] board) {
+        for (NotifyListener listener : notifyListeners) {
+            listener.renderBoard(board);
+        }
+    }
 
-						notifyPlayer();
-					}
-				}
-				else {
-					firstPlayer = !firstPlayer;
-					numMoves++;
+    /**
+     * Goes through list of notify listeners to callback and notify win.
+     */
+    private void notifyWin() {
+        for (NotifyListener listener : notifyListeners) {
+            listener.notifyWin(firstPlayer);
+        }
+    }
 
-					notifyPlayer();
-				}
-			}
-			else {
-				notifyCellAlreadyMarked();
-				notifyPlayer();
-				renderBoard(board);
-			}
-		}
-		else {
-			notifyInvalidInput(r, c);
-			notifyPlayer();
-			renderBoard(board);
-		}
-	}
+    /**
+     * Goes through list of notify listeners to callback and notify stalemate.
+     */
+    private void notifyStalemate() {
+        for (NotifyListener listener : notifyListeners) {
+            listener.notifyStalemate();
+        }
+    }
 
-	private void notifyInvalidInput(int r, int c) {
-		for (NotifyListener listener : notifyListeners) {
-			listener.notifyInvalidInput(r, c);
-		}
-	}
+    /**
+     * Goes through list of notify listeners to callback and notify turn of
+     * player.
+     */
+    private void notifyPlayer() {
+        for (NotifyListener listener : notifyListeners) {
+            listener.notifyTurn(firstPlayer);
+        }
 
-	private void notifyCellAlreadyMarked() {
-		for (NotifyListener listener : notifyListeners) {
-			listener.notifyCellAlreadyMarked();
-		}
-	}
+    }
 
-	private void notifyStalemate() {
-		for (NotifyListener listener : notifyListeners) {
-			listener.notifyStalemate();
-		}
-	}
+    /**
+     * Goes through list of notify listeners to callback and notify invalid
+     * input.
+     * 
+     * @param r Row value of invalid position
+     * @param c Column value of invalid position
+     */
+    private void notifyInvalidInput(int r, int c) {
+        for (NotifyListener listener : notifyListeners) {
+            listener.notifyInvalidInput(r, c);
+        }
+    }
 
-	private void notifyWin() {
-		for (NotifyListener listener : notifyListeners) {
-			listener.notifyWin(firstPlayer);
-		}
-	}
+    /**
+     * Goes through list of notify listeners to callback and notify that the
+     * cell is already marked.
+     */
+    private void notifyCellAlreadyMarked() {
+        for (NotifyListener listener : notifyListeners) {
+            listener.notifyCellAlreadyMarked();
+        }
+    }
 
-	public void addNotifyListener(NotifyListener listener) {
-		this.notifyListeners.add(listener);
-	}
-
-	public boolean isPlayerWon() {
-		return playerWon;
-	}
+    /**
+     * Add notify listener to list.
+     * 
+     * @param listener Listener to add
+     */
+    public void addNotifyListener(NotifyListener listener) {
+        this.notifyListeners.add(listener);
+    }
 }

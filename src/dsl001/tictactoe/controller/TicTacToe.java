@@ -4,28 +4,41 @@ import dsl001.tictactoe.model.Board;
 import dsl001.tictactoe.view.TicTacToeView;
 
 /**
- * Controller
+ * Controller that manages the model and view.
  * 
  * @author dsl001
- * 
+ * @since January 2015
  */
 public class TicTacToe {
-	private Board model;
+    private Board model;
 
-	public TicTacToe() {
-		this.model = new Board();
-	}
+    /**
+     * Sets up the model.
+     */
+    public TicTacToe() {
+        this.model = new Board();
+    }
 
-	public void startGame(TicTacToeView view) {
-		NotifyListener notifyListener = new NotifyModelListener(view);
-		model.addNotifyListener(notifyListener);
+    /**
+     * Starts the game based on the view.
+     * 
+     * @param view View to apply to the game
+     */
+    public void startGame(TicTacToeView view) {
+        // Add the notify listener for the model to interact with the view
+        NotifyListener notifyListener = new NotifyModelListener(view);
+        model.addNotifyListener(notifyListener);
 
-		ResetModelListener resetListener = new ResetModelListener(model);
-		view.addResetListener(resetListener);
+        // Add the player listener for the view to interact with the model,
+        // based on player
+        PlayerListener playerListener = new PlayerModelListener(model);
+        view.addPlayerListener(playerListener);
 
-		PlayerListener playerListener = new PlayerModelListener(model);
-		view.addPlayerListener(playerListener);
+        // Add the reset listener for the view to interact with the model
+        ResetModelListener resetListener = new ResetModelListener(model);
+        view.addResetListener(resetListener);
 
-		model.reset();
-	}
+        // Reset model to start game
+        model.reset();
+    }
 }
