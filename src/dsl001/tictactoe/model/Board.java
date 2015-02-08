@@ -28,9 +28,6 @@ public class Board {
     // Track number of moves
     private int numMoves;
 
-    // Whether three in a row has been identified
-    private boolean playerWon;
-
     // List of notify listeners
     private List<NotifyListener> notifyListeners;
 
@@ -48,6 +45,11 @@ public class Board {
                 board[r][c] = new Cell();
             }
         }
+
+        // Set first player to mark first
+        firstPlayer = true;
+        // Reset number of moves made
+        numMoves = 0;
     }
 
     /**
@@ -65,8 +67,6 @@ public class Board {
         firstPlayer = true;
         // Reset number of moves made
         numMoves = 0;
-        // Set playerWon to false
-        playerWon = false;
 
         // Mark all the cells to unmarked status
         for (int r = 0; r < ROWS; r++) {
@@ -82,12 +82,74 @@ public class Board {
     }
 
     /**
+     * Update status on cell on the board.
+     * 
+     * @param r Row position to update
+     * @param c Column position to update
+     */
+    public void placeMark(int r, int c) {
+        // Only update if row and column position are valid
+        if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS) {
+            // Only update if cell is unmarked
+            if (board[r][c].getStatus() == Status.UNMARKED) {
+                board[r][c].mark(firstPlayer);
+    
+                // With mark mark, render board
+                renderBoard(board);
+    
+                // Check for win if number of moves are made to check for win
+                if ((numMoves + 1) >= NUM_MOVES_TO_CHECK_WIN) {
+                    // Notify if a won occurred
+                    if (playerWon(r, c)) {
+                        notifyWin();
+                    }
+                    // If no win occurred and all moves have been made on the
+                    // board, notify a stalemate occurred
+                    else if ((numMoves + 1 == (ROWS * COLUMNS))) {
+                        notifyStalemate();
+                    }
+                    // If not win or stalemate occurred, notify next player to
+                    // mark
+                    else {
+                        firstPlayer = !firstPlayer;
+                        numMoves++;
+    
+                        notifyPlayer();
+                    }
+                }
+                // Notify next player to mark
+                else {
+                    firstPlayer = !firstPlayer;
+                    numMoves++;
+    
+                    notifyPlayer();
+                }
+            }
+            // Notify player that the cell was already marked
+            else {
+                notifyCellAlreadyMarked();
+                // renderBoard(board);
+                notifyPlayer();
+            }
+        }
+        // Notify player that the mark position is invalid
+        else {
+            notifyInvalidInput(r, c);
+            // renderBoard(board);
+            notifyPlayer();
+        }
+    }
+
+    /**
      * Checks if player won by checking for three of the same status.
      * 
      * @param r Row position to start checking for win
      * @param c Column position to start checking for win
+     * 
+     * @return True, if three of the same status; false, if no three of the same
+     *         status
      */
-    public void setPlayerWon(int r, int c) {
+    private boolean playerWon(int r, int c) {
         // Check for three in in a row
         boolean row = board[r][0].getStatus() == board[r][1].getStatus()
                 && board[r][1].getStatus() == board[r][2].getStatus();
@@ -106,68 +168,7 @@ public class Board {
                 && board[2][0].getStatus() == board[1][1].getStatus()
                 && board[1][1].getStatus() == board[0][2].getStatus();
 
-        playerWon = row || column || bdiagonal || fdiagonal;
-    }
-
-    /**
-     * Update status on cell on the board.
-     * 
-     * @param r Row position to update
-     * @param c Column position to update
-     */
-    public void placeMark(int r, int c) {
-        // Only update if row and column position are valid
-        if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS) {
-            // Only update if cell is unmarked
-            if (board[r][c].getStatus() == Status.UNMARKED) {
-                board[r][c].mark(firstPlayer);
-
-                // With mark mark, render board
-                renderBoard(board);
-
-                // Check for win if number of moves are made to check for win
-                if ((numMoves + 1) >= NUM_MOVES_TO_CHECK_WIN) {
-                    setPlayerWon(r, c);
-
-                    // Notify if a won occurred
-                    if (playerWon) {
-                        notifyWin();
-                    }
-                    // If no win occurred and all moves have been made on the
-                    // board, notify a stalemate occurred
-                    else if ((numMoves + 1 == (ROWS * COLUMNS))) {
-                        notifyStalemate();
-                    }
-                    // If not win or stalemate occurred, notify next player to
-                    // mark
-                    else {
-                        firstPlayer = !firstPlayer;
-                        numMoves++;
-
-                        notifyPlayer();
-                    }
-                }
-                // Notify next player to mark
-                else {
-                    firstPlayer = !firstPlayer;
-                    numMoves++;
-
-                    notifyPlayer();
-                }
-            }
-            // Notify player that the cell was already marked
-            else {
-                notifyCellAlreadyMarked();
-                // renderBoard(board);
-                notifyPlayer();
-            }
-        }
-        // Notify player that the mark position is invalid
-        else {
-            notifyInvalidInput(r, c);
-            // renderBoard(board);
-            notifyPlayer();
-        }
+        return row || column || bdiagonal || fdiagonal;
     }
 
     /**
