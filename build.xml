@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="TicTacToe">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="C:/eclipse-jee-luna-SR1-win32-x86_64/eclipse/"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+    <path id="TicTacToe.classpath">
+        <pathelement location="classes"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="classes"/>
+        <copy includeemptydirs="false" todir="classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="classes">
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="test"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="BoardTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.model.BoardTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="BoardTest.testBoard">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.model.BoardTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="BoardTest.testGetStatus">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.model.BoardTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="BoardTest.testPlaceMark">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.model.BoardTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="BoardTest.testReset">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.model.BoardTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="CellTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.model.CellTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="TicTacToe (2)">
+        <java classname="dsl001.tictactoe.controller.TicTacToe" failonerror="true" fork="yes">
+            <classpath refid="TicTacToe.classpath"/>
+        </java>
+    </target>
+    <target name="TicTacToeTest (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.controller.TicTacToeTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="TicTacToeTest (2)">
+        <java classname="dsl001.tictactoe.controller.TicTacToeTest" failonerror="true" fork="yes">
+            <classpath refid="TicTacToe.classpath"/>
+        </java>
+    </target>
+    <target name="TicTacToeTest">
+        <java classname="com.dsl.tictactoe.TicTacToeTest" failonerror="true" fork="yes">
+            <classpath refid="TicTacToe.classpath"/>
+        </java>
+    </target>
+    <target name="TicTacToeTest.testConsole">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.controller.TicTacToeTest" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="TicTacToeTestRunnerSuite">
+        <java classname="dsl001.tictactoe.TicTacToeTestRunner" failonerror="true" fork="yes">
+            <classpath refid="TicTacToe.classpath"/>
+        </java>
+    </target>
+    <target name="TicTacToeTestSuite">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="dsl001.tictactoe.TicTacToeTestSuite" todir="${junit.output.dir}"/>
+            <classpath refid="TicTacToe.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>

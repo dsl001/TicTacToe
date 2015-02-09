@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="TicTacToe" basedir="." default="release JAVA8_64">
+	<import file="build.xml" />
+	<property name="classes.dir" value="${basedir}/classes" />
+	<property name="src.dir" value="${basedir}/src" />
+
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="dist.java8_64.dir" value="${dist.dir}/JAVA8_64" />
+
+	<target name="release JAVA8_64" depends="build">
+		<delete dir="${dist.java8_64.dir}" quiet="true" />
+		<mkdir dir="${dist.java8_64.dir}" />
+
+		<!-- Create jar of classes -->
+		<jar destfile="${dist.java8_64.dir}/${ant.project.name}.jar">
+			<fileset dir="${classes.dir}">
+				<!-- Exlude these console and gui packages -->
+				<exclude name="**/view/console/**" />
+				<exclude name="**/view/gui/**" />
+			</fileset>
+		</jar>
+
+		<!-- Create jar of source files -->
+		<jar destfile="${dist.java8_64.dir}/${ant.project.name}-src.jar">
+			<fileset dir="${src.dir}">
+				<!-- Exlude these console and gui packages -->
+				<exclude name="**/view/console/**" />
+				<exclude name="**/view/gui/**" />
+			</fileset>
+		</jar>
+	</target>
+</project>
